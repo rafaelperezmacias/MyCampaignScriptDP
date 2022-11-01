@@ -3,19 +3,19 @@ package models;
 public class FederalDistrict {
 
     private int id;
+    private int number;
     private String name;
-    private State state;
 
     public FederalDistrict()
     {
 
     }
 
-    public FederalDistrict(int id, String name, State state)
+    public FederalDistrict(int id, int number, String name)
     {
         this.id = id;
+        this.number = number;
         this.name = name;
-        this.state = state;
     }
 
     public int getId() {
@@ -26,6 +26,14 @@ public class FederalDistrict {
         this.id = id;
     }
 
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
     public String getName() {
         return name;
     }
@@ -34,20 +42,12 @@ public class FederalDistrict {
         this.name = name;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
     @Override
     public String toString() {
         return "FederalDistrict{" +
                 "id=" + id +
+                ", number=" + number +
                 ", name='" + name + '\'' +
-                ", state=" + state +
                 '}';
     }
 

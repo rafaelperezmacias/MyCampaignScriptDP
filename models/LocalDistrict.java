@@ -3,19 +3,19 @@ package models;
 public class LocalDistrict {
 
     private int id;
+    private int number;
     private String name;
-    private State state;
 
     public LocalDistrict()
     {
 
     }
 
-    public LocalDistrict(int id, String name, State state)
+    public LocalDistrict(int id, int number, String name)
     {
         this.id = id;
+        this.number = number;
         this.name = name;
-        this.state = state;
     }
 
     public int getId() {
@@ -26,6 +26,14 @@ public class LocalDistrict {
         this.id = id;
     }
 
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
     public String getName() {
         return name;
     }
@@ -34,20 +42,12 @@ public class LocalDistrict {
         this.name = name;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
     @Override
     public String toString() {
         return "LocalDistrict{" +
                 "id=" + id +
+                ", number=" + number +
                 ", name='" + name + '\'' +
-                ", state=" + state +
                 '}';
     }
 
