@@ -4,16 +4,18 @@ public class FederalDistrict {
 
     private int id;
     private String name;
+    private State state;
 
     public FederalDistrict()
     {
 
     }
 
-    public FederalDistrict(int id, String name)
+    public FederalDistrict(int id, String name, State state)
     {
         this.id = id;
         this.name = name;
+        this.state = state;
     }
 
     public int getId() {
@@ -32,11 +34,20 @@ public class FederalDistrict {
         this.name = name;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "FederalDistrict{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", state=" + state +
                 '}';
     }
 

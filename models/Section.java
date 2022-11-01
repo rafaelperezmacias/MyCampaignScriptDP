@@ -3,6 +3,7 @@ package models;
 public class Section {
 
     private int id;
+    private int section;
     private State state;
     private Municipality municipality;
     private LocalDistrict localDistrict;
@@ -13,9 +14,10 @@ public class Section {
 
     }
 
-    public Section(int id, State state, Municipality municipality, LocalDistrict localDistrict, FederalDistrict federalDistrict)
+    public Section(int id, int section, State state, Municipality municipality, LocalDistrict localDistrict, FederalDistrict federalDistrict)
     {
         this.id = id;
+        this.section = section;
         this.state = state;
         this.municipality = municipality;
         this.localDistrict = localDistrict;
@@ -28,6 +30,14 @@ public class Section {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getSection() {
+        return section;
+    }
+
+    public void setSection(int section) {
+        this.section = section;
     }
 
     public State getState() {
@@ -66,6 +76,7 @@ public class Section {
     public String toString() {
         return "Section{" +
                 "id=" + id +
+                ", section=" + section +
                 ", state=" + state +
                 ", municipality=" + municipality +
                 ", localDistrict=" + localDistrict +
