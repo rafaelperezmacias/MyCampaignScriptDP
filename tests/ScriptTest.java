@@ -146,6 +146,9 @@ public class ScriptTest {
             System.exit(1);
         }
 
+        // Generacion de los archivos txt para las inserciones
+        generateFileForStates();
+
         System.out.println("Lineas leidas: " + lines);
         System.out.println();
         System.out.println("Informacion obtenida");
@@ -166,4 +169,52 @@ public class ScriptTest {
         }
     }
 
+    private static void generateFileForStates() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("INSERT INTO `state`(`id`, `name`) VALUES ").append("\n");
+        for ( State state : states ) {
+            builder.append("(").append(state.getId()).append(", '").append(state.getName()).append("'), ").append("\n");
+        }
+        builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
+        writeToDisk(builder.toString(), "states.txt");
+    }
+
+    private static void writeToDisk(String text, String path) {
+        File file = new File(path);
+        File folder = file.getParentFile();
+        if ( folder != null && !folder.exists() ) {
+            folder.mkdirs();
+        }
+        if ( !file.exists() ) {
+            try {
+                file.createNewFile();
+            } catch ( IOException ex ) {
+                System.out.println("Error al crear el archivo");
+                System.out.println(ex.getMessage());
+                System.exit(1);
+            }
+        }
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+        } catch ( FileNotFoundException ex ) {
+            System.out.println("Error al abrir el archivo");
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+        try {
+            fileOutputStream.write(text.getBytes());
+        } catch ( IOException ex ) {
+            System.out.println("Error al escribir en el archivo");
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+        try {
+            fileOutputStream.close();
+        } catch ( IOException ex ) {
+            System.out.println("Error al cerrar el archivo");
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
+    }
 }
