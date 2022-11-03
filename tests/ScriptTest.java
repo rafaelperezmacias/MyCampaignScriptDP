@@ -14,12 +14,23 @@ public class ScriptTest {
     private static int municipalities = 0;
     private static int sections = 0;
 
+    private static String defaultOutput = "";
+    private static int defaultBatch = 2000;
+
     public static void main(String[] args) {
         // Apertura del archivo
+        String path = "D:\\RafaelPM\\Java\\MyCampaignScriptDP\\src\\files\\elecciones-2021.csv";
+        int batch = 2;
+        String output = "out";
+
+        if ( !output.endsWith("\\") ) {
+            output += "\\";
+        }
+
         BufferedReader buffered = null;
         FileReader reader = null;
         try {
-            reader = new FileReader("D:\\RafaelPM\\Java\\MyCampaignScriptDP\\src\\files\\elecciones-2021.csv");
+            reader = new FileReader(path);
             buffered = new BufferedReader(reader);
         } catch ( FileNotFoundException ex ) {
             System.out.println("Ruta del archivo no encontrada");
@@ -147,11 +158,11 @@ public class ScriptTest {
         }
 
         // Generacion de los archivos txt para las inserciones
-        generateFileForStates();
-        generateFileForFederalDistricts();
-        generateFileForLocalDistricts();
-        generateFileForMunicipalities();
-        generateFileForSections();
+        generateFileForStates(batch, output);
+        generateFileForFederalDistricts(batch, output);
+        generateFileForLocalDistricts(batch, output);
+        generateFileForMunicipalities(batch, output);
+        generateFileForSections(batch, output);
 
         System.out.println("Lineas leidas: " + lines);
         System.out.println();
@@ -173,75 +184,114 @@ public class ScriptTest {
         }
     }
 
-    private static void generateFileForStates() {
+    private static void generateFileForStates(int batch, String output) {
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO `states`(`id`, `name`) VALUES ").append("\n");
+        int rows = 0;
         for ( State state : states ) {
-            builder.append("(").append(state.getId()).append(",'").append(state.getName()).append("'), ").append("\n");
+            builder.append("(").append(state.getId()).append(",'").append(state.getName()).append("'),").append("\n");
+            if ( ++rows == batch ) {
+                builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
+                builder.append("\n");
+                builder.append("INSERT INTO `states`(`id`, `name`) VALUES ").append("\n");
+                rows = 0;
+            }
         }
-        builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
-        writeToDisk(builder.toString(), "states.txt");
+        if ( rows == 0 ) {
+            builder.replace(builder.length() - "INSERT INTO `states`(`id`, `name`) VALUES \n\n".length(), builder.length(), "");
+        }
+        writeToDisk(builder.toString(), output + "states.txt");
     }
 
-    private static void generateFileForFederalDistricts() {
+    private static void generateFileForFederalDistricts(int batch, String output) {
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO `federal_districts`(`id`, `name`, `number`) VALUES ").append("\n");
+        int rows = 0;
         for ( State state : states ) {
             for ( FederalDistrict federalDistrict : state.getFederalDistricts() ) {
                 builder.append("(").append(federalDistrict.getId()).append(",'").append(federalDistrict.getName());
-                builder.append("', ").append(federalDistrict.getNumber()).append("), ").append("\n");
+                builder.append("', ").append(federalDistrict.getNumber()).append("),").append("\n");
+                if ( ++rows == batch ) {
+                    builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
+                    builder.append("\n");
+                    builder.append("(").append(federalDistrict.getId()).append(",'").append(federalDistrict.getName());
+                    rows = 0;
+                }
             }
         }
-        builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
-        writeToDisk(builder.toString(), "federalDistricts.txt");
+        if ( rows == 0 ) {
+
+            builder.replace(builder.length() - "INSERT INTO `federal_districts`(`id`, `name`, `number`) VALUES \n\n".length(), builder.length(), "");
+        }
+        writeToDisk(builder.toString(), output + "federalDistricts.txt");
     }
 
-    private static void generateFileForLocalDistricts() {
+    private static void generateFileForLocalDistricts(int batch, String output) {
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO `local_districts`(`id`, `name`, `number`) VALUES ").append("\n");
+        int rows = 0;
         for ( State state : states ) {
             for ( LocalDistrict localDistrict : state.getLocalDistricts() ) {
                 builder.append("(").append(localDistrict.getId()).append(",'").append(localDistrict.getName());
-                builder.append("', ").append(localDistrict.getNumber()).append("), ").append("\n");
+                builder.append("', ").append(localDistrict.getNumber()).append("),").append("\n");
+                if ( ++rows == batch ) {
+                    builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
+                    builder.append("\n");
+                    builder.append("INSERT INTO `local_districts`(`id`, `name`, `number`) VALUES ").append("\n");
+                    rows = 0;
+                }
             }
         }
-        builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
-        writeToDisk(builder.toString(), "localDistricts.txt");
+        if ( rows == 0 ) {
+            builder.replace(builder.length() - "INSERT INTO `local_districts`(`id`, `name`, `number`) VALUES \n\n".length(), builder.length(), "");
+        }
+        writeToDisk(builder.toString(), output + "localDistricts.txt");
     }
 
-    private static void generateFileForMunicipalities() {
+    private static void generateFileForMunicipalities(int batch, String output) {
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO `municipalities`(`id`, `name`, `number`) VALUES ").append("\n");
+        int rows = 0;
         for ( State state : states ) {
             for ( Municipality municipality : state.getMunicipalities() ) {
                 builder.append("(").append(municipality.getId()).append(",'").append(municipality.getName());
-                builder.append("', ").append(municipality.getNumber()).append("), ").append("\n");
+                builder.append("', ").append(municipality.getNumber()).append("),").append("\n");
+                if ( ++rows == batch ) {
+                    builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
+                    builder.append("\n");
+                    builder.append("INSERT INTO `municipalities`(`id`, `name`, `number`) VALUES ").append("\n");
+                    rows = 0;
+                }
             }
         }
-        builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
-        writeToDisk(builder.toString(), "municipalities.txt");
+        if ( rows == 0 ) {
+            builder.replace(builder.length() - "INSERT INTO `municipalities`(`id`, `name`, `number`) VALUES \n\n".length(), builder.length(), "");
+        }
+        writeToDisk(builder.toString(), output + "municipalities.txt");
     }
 
-    private static void generateFileForSections() {
+    private static void generateFileForSections(int batch, String output) {
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO `sections`(`id`, `section`, `state_id`, `municipality_id`, `federal_district_id`, `local_district_id`) VALUES ").append("\n");
-        int row = 0;
+        int rows = 0;
         for ( State state : states ) {
             for ( Section section : state.getSections() ) {
                 builder.append("(").append(section.getId()).append(", '").append(section.getSection()).append("', ");
                 builder.append(state.getId()).append(", ").append(section.getMunicipality().getId()).append(", ");
                 builder.append(section.getFederalDistrict().getId()).append(", ").append(section.getLocalDistrict().getId());
-                builder.append("), ").append("\n");
-                if ( ++row == 2500 ) {
-                    builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
+                builder.append("),").append("\n");
+                if ( ++rows == batch ) {
+                    builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
                     builder.append("\n");
                     builder.append("INSERT INTO `sections`(`id`, `section`, `state_id`, `municipality_id`, `federal_district_id`, `local_district_id`) VALUES ").append("\n");
-                    row = 0;
+                    rows = 0;
                 }
             }
         }
-        builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
-        writeToDisk(builder.toString(), "sections.txt");
+        if ( rows == 0 ) {
+            builder.replace(builder.length() - "INSERT INTO `sections`(`id`, `section`, `state_id`, `municipality_id`, `federal_district_id`, `local_district_id`) VALUES \n\n".length(), builder.length(), "");
+        }
+        writeToDisk(builder.toString(), output + "sections.txt");
     }
 
     private static void writeToDisk(String text, String path) {
