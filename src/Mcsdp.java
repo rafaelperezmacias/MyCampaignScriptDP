@@ -1,12 +1,10 @@
-package tests;
-
 import models.*;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class ScriptTest {
+public class Mcsdp {
 
     private static ArrayList<State> states = new ArrayList<>();
     private static int federalDistricts = 0;
@@ -14,19 +12,29 @@ public class ScriptTest {
     private static int municipalities = 0;
     private static int sections = 0;
 
-    private static String defaultOutput = "";
+    private static String defaultOutput = "files";
     private static int defaultBatch = 2000;
 
     public static void main(String[] args) {
         // Apertura del archivo
-        String path = "D:\\RafaelPM\\Java\\MyCampaignScriptDP\\src\\files\\elecciones-2021.csv";
-        int batch = 2;
-        String output = "out";
-
+        if ( args.length < 1 ) {
+            System.out.println("Falta la especificacion de parametros");
+            System.out.println("[ruta-archivo] [batch-size] [ruta-salida]");
+            System.exit(1);
+        }
+        String path = args[0];
+        int batch = 0;
+        String output = "";
+        try {
+            batch = Integer.parseInt(args[1]);
+            output = args[2];
+        } catch ( Exception ex ) {
+            batch = defaultBatch;
+            output = defaultOutput;
+        }
         if ( !output.endsWith("\\") ) {
             output += "\\";
         }
-
         BufferedReader buffered = null;
         FileReader reader = null;
         try {
@@ -199,6 +207,8 @@ public class ScriptTest {
         }
         if ( rows == 0 ) {
             builder.replace(builder.length() - "INSERT INTO `states`(`id`, `name`) VALUES \n\n".length(), builder.length(), "");
+        } else {
+            builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
         }
         writeToDisk(builder.toString(), output + "states.txt");
     }
@@ -214,14 +224,15 @@ public class ScriptTest {
                 if ( ++rows == batch ) {
                     builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
                     builder.append("\n");
-                    builder.append("(").append(federalDistrict.getId()).append(",'").append(federalDistrict.getName());
+                    builder.append("INSERT INTO `federal_districts`(`id`, `name`, `number`) VALUES ").append("\n");
                     rows = 0;
                 }
             }
         }
         if ( rows == 0 ) {
-
             builder.replace(builder.length() - "INSERT INTO `federal_districts`(`id`, `name`, `number`) VALUES \n\n".length(), builder.length(), "");
+        } else {
+            builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
         }
         writeToDisk(builder.toString(), output + "federalDistricts.txt");
     }
@@ -235,7 +246,7 @@ public class ScriptTest {
                 builder.append("(").append(localDistrict.getId()).append(",'").append(localDistrict.getName());
                 builder.append("', ").append(localDistrict.getNumber()).append("),").append("\n");
                 if ( ++rows == batch ) {
-                    builder.replace(builder.length() - ", \n".length(), builder.length(), ";");
+                    builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
                     builder.append("\n");
                     builder.append("INSERT INTO `local_districts`(`id`, `name`, `number`) VALUES ").append("\n");
                     rows = 0;
@@ -244,6 +255,8 @@ public class ScriptTest {
         }
         if ( rows == 0 ) {
             builder.replace(builder.length() - "INSERT INTO `local_districts`(`id`, `name`, `number`) VALUES \n\n".length(), builder.length(), "");
+        } else {
+            builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
         }
         writeToDisk(builder.toString(), output + "localDistricts.txt");
     }
@@ -266,6 +279,8 @@ public class ScriptTest {
         }
         if ( rows == 0 ) {
             builder.replace(builder.length() - "INSERT INTO `municipalities`(`id`, `name`, `number`) VALUES \n\n".length(), builder.length(), "");
+        } else {
+            builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
         }
         writeToDisk(builder.toString(), output + "municipalities.txt");
     }
@@ -290,6 +305,8 @@ public class ScriptTest {
         }
         if ( rows == 0 ) {
             builder.replace(builder.length() - "INSERT INTO `sections`(`id`, `section`, `state_id`, `municipality_id`, `federal_district_id`, `local_district_id`) VALUES \n\n".length(), builder.length(), "");
+        } else {
+            builder.replace(builder.length() - ",\n".length(), builder.length(), ";");
         }
         writeToDisk(builder.toString(), output + "sections.txt");
     }
