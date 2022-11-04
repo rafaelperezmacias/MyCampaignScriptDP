@@ -1,6 +1,9 @@
 import models.*;
 
 import java.io.*;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -36,10 +39,8 @@ public class Mcsdp {
             output += "\\";
         }
         BufferedReader buffered = null;
-        FileReader reader = null;
         try {
-            reader = new FileReader(path);
-            buffered = new BufferedReader(reader);
+            buffered = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8));
         } catch ( FileNotFoundException ex ) {
             System.out.println("Ruta del archivo no encontrada");
             System.out.println(ex.getMessage());
@@ -158,7 +159,6 @@ public class Mcsdp {
         // Cerramos el buffer
         try {
             buffered.close();
-            reader.close();
         } catch ( IOException ex ) {
             System.out.println("Error al cerrar el archivo");
             System.out.println(ex.getMessage());
